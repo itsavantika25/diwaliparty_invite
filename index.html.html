@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Diwali and Cards Party</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Hind:wght@400;500&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #f2e8d3;
+        --ink: #26304a;
+        --dim: #6b6a63;
+        --paper: #fbf6ea;
+        --mari: #eba51c;
+        --red: #bf3f2b;
+        --line: #26304a;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #1d2236;
+          --ink: #f1e6cf;
+          --dim: #a8a392;
+          --paper: #2a3150;
+          --mari: #f0b43a;
+          --red: #e8705a;
+          --line: #f1e6cf;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+        overflow-x: hidden;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Hind, "Helvetica Neue", Arial, sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .wrap {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 48px 20px 56px;
+        min-height: 100vh;
+      }
+
+      /* entrance */
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes deal {
+        from {
+          opacity: 0;
+          transform: translateY(40px) rotate(calc(var(--r) * 4));
+        }
+        to {
+          opacity: 1;
+          transform: rotate(var(--r));
+        }
+      }
+      @keyframes sweep {
+        from {
+          background-size: 0 100%;
+        }
+        to {
+          background-size: 100% 100%;
+        }
+      }
+      @keyframes sway {
+        0%,
+        100% {
+          transform: rotate(-1.5deg);
+        }
+        50% {
+          transform: rotate(1.5deg);
+        }
+      }
+      @keyframes flick {
+        0%,
+        100% {
+          transform: scale(1, 1);
+        }
+        35% {
+          transform: scale(0.92, 1.08);
+        }
+        70% {
+          transform: scale(1.05, 0.95);
+        }
+      }
+      @keyframes nudge {
+        0%,
+        100% {
+          opacity: 0.55;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      @keyframes drift {
+        0% {
+          transform: translate3d(0, 0, 0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.5;
+        }
+        90% {
+          opacity: 0.4;
+        }
+        100% {
+          transform: translate3d(var(--dx), -110vh, 0);
+          opacity: 0;
+        }
+      }
+
+      .diya {
+        width: clamp(70px, 20vw, 96px);
+        height: auto;
+        transform-origin: 50% 100%;
+        animation:
+          rise 0.9s ease-out both,
+          sway 6s ease-in-out 1s infinite;
+      }
+      .fl {
+        transform-box: fill-box;
+        transform-origin: 50% 100%;
+        animation: flick 2.6s ease-in-out infinite;
+      }
+      .kicker {
+        font-family: Kalam, "Comic Sans MS", cursive;
+        font-size: clamp(18px, 4.6vw, 24px);
+        margin: 22px 0 0;
+        animation: rise 0.8s 0.25s ease-out both;
+      }
+      h1 {
+        font-family: Kalam, "Comic Sans MS", cursive;
+        font-weight: 700;
+        font-size: clamp(38px, 10vw, 76px);
+        line-height: 1.08;
+        margin: 4px 0 12px;
+        max-width: 14ch;
+        animation: rise 0.8s 0.4s ease-out both;
+      }
+      h1 em {
+        font-style: normal;
+        padding: 0 6px;
+        margin: 0 -2px;
+        background: linear-gradient(
+            transparent 52%,
+            var(--mari) 52%,
+            var(--mari) 88%,
+            transparent 88%
+          )
+          no-repeat left/0 100%;
+        animation: sweep 0.9s 1.1s ease-out forwards;
+      }
+      .sub {
+        font-size: clamp(16px, 4vw, 19px);
+        line-height: 1.5;
+        max-width: 30ch;
+        margin: 0 0 36px;
+        color: var(--dim);
+        animation: rise 0.8s 0.6s ease-out both;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px 16px;
+        width: 100%;
+        max-width: 420px;
+      }
+      .card {
+        --r: 0deg;
+        perspective: 900px;
+        background: none;
+        border: 0;
+        padding: 0;
+        aspect-ratio: 5/7;
+        cursor: pointer;
+        font: inherit;
+        color: inherit;
+        transform: rotate(var(--r));
+        transition: transform 0.25s ease;
+        animation: deal 0.8s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .card:nth-child(1) {
+        --r: -2.5deg;
+        animation-delay: 0.8s;
+      }
+      .card:nth-child(2) {
+        --r: 1.8deg;
+        animation-delay: 0.95s;
+      }
+      .card:nth-child(3) {
+        --r: 1.2deg;
+        animation-delay: 1.1s;
+      }
+      .card:nth-child(4) {
+        --r: -1.6deg;
+        animation-delay: 1.25s;
+      }
+      .card:hover,
+      .card:focus-visible {
+        transform: rotate(0) translateY(-4px);
+        outline: none;
+      }
+      .in {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.65s cubic-bezier(0.3, 0.7, 0.2, 1);
+      }
+      .card.open .in {
+        transform: rotateY(180deg);
+      }
+      .f,
+      .b {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        background: var(--paper);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        box-shadow: 4px 4px 0 var(--line);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        transition: box-shadow 0.25s;
+      }
+      .card:hover .f {
+        box-shadow: 6px 6px 0 var(--line);
+      }
+      .f .s {
+        font-size: clamp(46px, 13vw, 64px);
+        line-height: 1;
+        color: var(--ink);
+      }
+      .card:nth-child(2) .s,
+      .card:nth-child(3) .s,
+      .card:nth-child(2) i,
+      .card:nth-child(3) i {
+        color: var(--red);
+      }
+      .f .l {
+        font-family: Kalam, cursive;
+        font-size: clamp(17px, 4.5vw, 21px);
+        margin-top: 8px;
+      }
+      .f i {
+        position: absolute;
+        top: 8px;
+        left: 11px;
+        font-style: normal;
+        font-size: 15px;
+      }
+      .b {
+        transform: rotateY(180deg);
+        background: var(--mari);
+        color: #26304a;
+        border-color: #26304a;
+        box-shadow: 4px 4px 0 #26304a;
+      }
+      .b .t {
+        font-family: Kalam, cursive;
+        font-weight: 700;
+        font-size: clamp(19px, 5vw, 23px);
+        margin-bottom: 6px;
+      }
+      .b .d {
+        font-size: clamp(13px, 3.6vw, 15px);
+        line-height: 1.4;
+        font-weight: 500;
+      }
+
+      .hint {
+        margin: 32px 0 0;
+        color: var(--dim);
+        font-size: 15px;
+        animation:
+          rise 0.8s 1.6s ease-out both,
+          nudge 3.5s 2.6s ease-in-out infinite;
+      }
+      .rsvp {
+        margin-top: 34px;
+        font-size: clamp(13px, 4vw, 16px);
+        line-height: 1.5;
+        max-width: 55ch;
+        animation: rise 0.8s 1.8s ease-out both;
+      }
+      .rsvp b {
+        font-family: Kalam, cursive;
+        font-size: 24px;
+        display: block;
+        color: var(--red);
+        font-weight: 700;
+      }
+      .note {
+        font-family: Kalam, "Comic Sans MS", cursive;
+        font-size: 16px;
+        line-height: 1.45;
+        color: var(--dim);
+        max-width: 34ch;
+        margin: 44px 0 0;
+        transform: rotate(-1deg);
+        animation: rise 0.8s 2s ease-out both;
+      }
+
+      /* drifting embers */
+      .embers {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .embers span {
+        position: absolute;
+        bottom: -12px;
+        left: var(--x);
+        width: var(--s);
+        height: var(--s);
+        border-radius: 50%;
+        background: var(--mari);
+        opacity: 0;
+        animation: drift var(--t) var(--d) linear infinite;
+      }
+
+      @media (min-width: 760px) {
+        .wrap {
+          padding-top: 72px;
+        }
+        .grid {
+          grid-template-columns: repeat(4, 1fr);
+          max-width: 880px;
+          gap: 24px;
+        }
+        .sub {
+          margin-bottom: 48px;
+        }
+      }
+      @media (max-width: 340px) {
+        .grid {
+          gap: 16px 10px;
+        }
+        .wrap {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+        h1 em {
+          background-size: 100% 100%;
+        }
+        .embers {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="embers" aria-hidden="true">
+      <span style="--x: 8%; --s: 5px; --t: 16s; --d: 0s; --dx: 30px"></span>
+      <span style="--x: 24%; --s: 4px; --t: 19s; --d: 4s; --dx: -24px"></span>
+      <span style="--x: 41%; --s: 6px; --t: 22s; --d: 9s; --dx: 36px"></span>
+      <span style="--x: 58%; --s: 4px; --t: 17s; --d: 2s; --dx: -30px"></span>
+      <span style="--x: 73%; --s: 5px; --t: 20s; --d: 7s; --dx: 24px"></span>
+      <span style="--x: 90%; --s: 4px; --t: 18s; --d: 11s; --dx: -36px"></span>
+    </div>
+
+    <main class="wrap">
+      <svg class="diya" viewBox="0 0 100 80" aria-hidden="true">
+        <g class="fl">
+          <path
+            d="M50 4 C57 16 60 24 50 36 C40 24 43 16 50 4Z"
+            fill="#bf3f2b"
+            stroke="#26304a"
+            stroke-width="2.5"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M50 18 C53 24 54 28 50 33 C46 28 47 24 50 18Z"
+            fill="#eba51c"
+          />
+        </g>
+        <path
+          d="M8 44 Q50 40 92 44 Q88 72 50 74 Q12 72 8 44Z"
+          fill="#eba51c"
+          stroke="#26304a"
+          stroke-width="2.5"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M24 56 Q50 62 76 56"
+          fill="none"
+          stroke="#26304a"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+
+      <p class="kicker">You are invited to a</p>
+      <h1><em>Diwali</em> and Cards Party</h1>
+      <br>
+
+      <div class="grid">
+        <button class="card" aria-label="When">
+          <div class="in">
+            <div class="f">
+              <i>♠</i>
+              <div class="s">♠</div>
+              <div class="l">When</div>
+            </div>
+            <div class="b">
+              <div class="t">When</div>
+              <div class="d">Thu, 5 Nov<br />Starts at 5 p.m. Being late isn't allowed.</div>
+            </div>
+          </div>
+        </button>
+        <button class="card" aria-label="Where">
+          <div class="in">
+            <div class="f">
+              <i>♥</i>
+              <div class="s">♥</div>
+              <div class="l">Where</div>
+            </div>
+            <div class="b">
+              <div class="t">Where</div>
+              <div class="d">My place.<br />I’ll send the pin on WhatsApp.</div>
+            </div>
+          </div>
+        </button>
+        <button class="card" aria-label="Wear">
+          <div class="in">
+            <div class="f">
+              <i>♦</i>
+              <div class="s">♦</div>
+              <div class="l">Wear</div>
+            </div>
+            <div class="b">
+              <div class="t">Wear</div>
+              <div class="d">
+                Indian ethnic compulsory. (No jeans, no sneakers.)
+              </div>
+            </div>
+          </div>
+        </button>
+        <button class="card" aria-label="Bring">
+          <div class="in">
+            <div class="f">
+              <i>♣</i>
+              <div class="s">♣</div>
+              <div class="l">Bring</div>
+            </div>
+            <div class="b">
+              <div class="t">Bring</div>
+              <div class="d">
+                Literally yourself and nothing else. No gifts allowed. Rest is on me.
+              </div>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <p class="hint">Tap a card to turn it over.</p>
+      <p class="rsvp">
+        <b>Please Note-</b>Declining the invite is not allowed. The dress code must be strictly
+        followed. (Don’t be party poopers.)
+        Oh and if you don't know how to play cards, I will teach you. Don't worry about that.
+      </p>
+    </main>
+
+    <script>
+      document.querySelectorAll(".card").forEach(function (c) {
+        c.addEventListener("click", function () {
+          c.classList.toggle("open");
+        });
+      });
+    </script>
+  </body>
+</html>
